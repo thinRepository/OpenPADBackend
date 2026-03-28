@@ -1,0 +1,48 @@
+{
+  "info": {
+    "name": "OpenPAD Backend",
+    "description": "Postman collection for the OpenPAD Backend API (Spring Boot, running on localhost:8080)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Hello",
+      "item": [
+        {
+          "name": "GET Hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hello",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "hello"]
+            },
+            "description": "Returns a plain-text 'Hello, World!' greeting."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain;charset=UTF-8"
+                }
+              ],
+              "body": "Hello, World!"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
