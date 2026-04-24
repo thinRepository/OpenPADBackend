@@ -114,10 +114,7 @@ class ChallengeServiceTest {
 
     @Test
     fun `validateChallenge rejects empty SHA`() {
-        val request = ChallengeValidationRequestDto(
-            sha = "",
-            createdAt = Instant.now()
-        )
+        val request = ChallengeValidationRequestDto(sha = "")
 
         val response = service.validateChallenge(request)
 
@@ -127,10 +124,7 @@ class ChallengeServiceTest {
 
     @Test
     fun `validateChallenge rejects SHA with incorrect length`() {
-        val request = ChallengeValidationRequestDto(
-            sha = "abc123",  // Too short
-            createdAt = Instant.now()
-        )
+        val request = ChallengeValidationRequestDto(sha = "abc123")
 
         val response = service.validateChallenge(request)
 
@@ -140,10 +134,7 @@ class ChallengeServiceTest {
 
     @Test
     fun `validateChallenge rejects SHA with non-hex characters`() {
-        val request = ChallengeValidationRequestDto(
-            sha = "z".repeat(64),  // 'z' is not hex
-            createdAt = Instant.now()
-        )
+        val request = ChallengeValidationRequestDto(sha = "z".repeat(64))
 
         val response = service.validateChallenge(request)
 
@@ -155,10 +146,7 @@ class ChallengeServiceTest {
     fun `validateChallenge returns not found when SHA doesn't exist in database`() {
         whenever(mockRepository.findBySha(any())).thenReturn(null)
 
-        val request = ChallengeValidationRequestDto(
-            sha = "a".repeat(64),
-            createdAt = Instant.now()
-        )
+        val request = ChallengeValidationRequestDto(sha = "a".repeat(64))
 
         val response = service.validateChallenge(request)
 
@@ -167,44 +155,18 @@ class ChallengeServiceTest {
     }
 
     @Test
-    fun `validateChallenge rejects when createdAt doesn't match database`() {
-        val now = Instant.now()
-        val challenge = Challenge(
-            id = 1,
-            sha = "a".repeat(64),
-            createdAt = now,
-            expiresAt = now.plusSeconds(300)
-        )
-
-        whenever(mockRepository.findBySha("a".repeat(64))).thenReturn(challenge)
-
-        val request = ChallengeValidationRequestDto(
-            sha = "a".repeat(64),
-            createdAt = now.minusSeconds(10)  // Different timestamp
-        )
-
-        val response = service.validateChallenge(request)
-
-        assertFalse(response.isValid)
-        assertEquals("Challenge creation timestamp mismatch", response.message)
-    }
-
-    @Test
     fun `validateChallenge rejects when challenge has expired`() {
         val now = Instant.now()
         val challenge = Challenge(
             id = 1,
             sha = "a".repeat(64),
-            createdAt = now.minusSeconds(400),  // Created 400 seconds ago
-            expiresAt = now.minusSeconds(100)   // Expired 100 seconds ago
+            createdAt = now.minusSeconds(400),
+            expiresAt = now.minusSeconds(100)
         )
 
         whenever(mockRepository.findBySha("a".repeat(64))).thenReturn(challenge)
 
-        val request = ChallengeValidationRequestDto(
-            sha = "a".repeat(64),
-            createdAt = challenge.createdAt
-        )
+        val request = ChallengeValidationRequestDto(sha = "a".repeat(64))
 
         val response = service.validateChallenge(request)
 
@@ -219,15 +181,12 @@ class ChallengeServiceTest {
             id = 1,
             sha = "a".repeat(64),
             createdAt = now.minusSeconds(100),
-            expiresAt = now.plusSeconds(200)  // Expires in 200 seconds
+            expiresAt = now.plusSeconds(200)
         )
 
         whenever(mockRepository.findBySha("a".repeat(64))).thenReturn(challenge)
 
-        val request = ChallengeValidationRequestDto(
-            sha = "a".repeat(64),
-            createdAt = challenge.createdAt
-        )
+        val request = ChallengeValidationRequestDto(sha = "a".repeat(64))
 
         val response = service.validateChallenge(request)
 
@@ -248,10 +207,7 @@ class ChallengeServiceTest {
 
         whenever(mockRepository.findBySha("b".repeat(64))).thenReturn(challenge)
 
-        val request = ChallengeValidationRequestDto(
-            sha = "b".repeat(64),
-            createdAt = challenge.createdAt
-        )
+        val request = ChallengeValidationRequestDto(sha = "b".repeat(64))
 
         val response = service.validateChallenge(request)
 

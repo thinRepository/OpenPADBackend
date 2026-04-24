@@ -156,17 +156,16 @@ class ChallengeControllerTest {
 
     @Test
     fun `POST challenge-validate returns 200 OK with valid challenge`() {
-        val now = Instant.now()
         val sha = "a".repeat(64)
         val mockResponse = ChallengeValidationResponseDto(
             isValid = true,
             message = "Challenge is valid"
         )
 
-        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha, now)))
+        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha)))
             .thenReturn(mockResponse)
 
-        val request = ChallengeValidationRequestDto(sha, now)
+        val request = ChallengeValidationRequestDto(sha)
 
         mockMvc.post("/api/v1/challenge/validate") {
             contentType = MediaType.APPLICATION_JSON
@@ -180,17 +179,16 @@ class ChallengeControllerTest {
 
     @Test
     fun `POST challenge-validate returns 200 OK with invalid challenge`() {
-        val now = Instant.now()
         val sha = "a".repeat(64)
         val mockResponse = ChallengeValidationResponseDto(
             isValid = false,
             message = "Challenge has expired"
         )
 
-        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha, now)))
+        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha)))
             .thenReturn(mockResponse)
 
-        val request = ChallengeValidationRequestDto(sha, now)
+        val request = ChallengeValidationRequestDto(sha)
 
         mockMvc.post("/api/v1/challenge/validate") {
             contentType = MediaType.APPLICATION_JSON
@@ -204,23 +202,9 @@ class ChallengeControllerTest {
 
     @Test
     fun `POST challenge-validate rejects request with missing SHA`() {
-        val now = Instant.now()
-
         mockMvc.post("/api/v1/challenge/validate") {
             contentType = MediaType.APPLICATION_JSON
-            content = "{\"createdAt\": \"${now}\"}"  // Missing SHA
-        }.andExpect {
-            status { isBadRequest() }
-        }
-    }
-
-    @Test
-    fun `POST challenge-validate rejects request with missing createdAt`() {
-        val sha = "a".repeat(64)
-
-        mockMvc.post("/api/v1/challenge/validate") {
-            contentType = MediaType.APPLICATION_JSON
-            content = "{\"sha\": \"$sha\"}"  // Missing createdAt
+            content = "{}"  // Missing SHA
         }.andExpect {
             status { isBadRequest() }
         }
@@ -228,17 +212,16 @@ class ChallengeControllerTest {
 
     @Test
     fun `POST challenge-validate returns challenge not found response`() {
-        val now = Instant.now()
         val sha = "a".repeat(64)
         val mockResponse = ChallengeValidationResponseDto(
             isValid = false,
             message = "Challenge not found"
         )
 
-        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha, now)))
+        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha)))
             .thenReturn(mockResponse)
 
-        val request = ChallengeValidationRequestDto(sha, now)
+        val request = ChallengeValidationRequestDto(sha)
 
         mockMvc.post("/api/v1/challenge/validate") {
             contentType = MediaType.APPLICATION_JSON
@@ -251,42 +234,17 @@ class ChallengeControllerTest {
     }
 
     @Test
-    fun `POST challenge-validate returns timestamp mismatch response`() {
-        val now = Instant.now()
-        val sha = "a".repeat(64)
-        val mockResponse = ChallengeValidationResponseDto(
-            isValid = false,
-            message = "Challenge creation timestamp mismatch"
-        )
-
-        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha, now)))
-            .thenReturn(mockResponse)
-
-        val request = ChallengeValidationRequestDto(sha, now)
-
-        mockMvc.post("/api/v1/challenge/validate") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.isValid") { value(false) }
-            jsonPath("$.message") { value("Challenge creation timestamp mismatch") }
-        }
-    }
-
-    @Test
     fun `POST challenge-validate response contains both fields`() {
-        val now = Instant.now()
         val sha = "a".repeat(64)
         val mockResponse = ChallengeValidationResponseDto(
             isValid = true,
             message = "Challenge is valid"
         )
 
-        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha, now)))
+        whenever(challengeService.validateChallenge(ChallengeValidationRequestDto(sha)))
             .thenReturn(mockResponse)
 
-        val request = ChallengeValidationRequestDto(sha, now)
+        val request = ChallengeValidationRequestDto(sha)
 
         mockMvc.post("/api/v1/challenge/validate") {
             contentType = MediaType.APPLICATION_JSON
