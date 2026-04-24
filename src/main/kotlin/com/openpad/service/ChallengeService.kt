@@ -75,24 +75,21 @@ class ChallengeService(private val challengeRepository: ChallengeRepository) {
     }
 
     /**
-     * Validate a challenge using SHA and creation timestamp.
+     * Validate a challenge using SHA.
      *
      * **Validation steps:**
-     *  1. Validate input fields (SHA and createdAt) are present and properly formatted
+     *  1. Validate SHA is present and properly formatted
      *  2. Look up the challenge by SHA in the database
-     *  3. Verify the createdAt timestamp matches the one in the database
-     *  4. Check if the challenge has expired (current time > expiresAt)
-     *  5. Return validation result
+     *  3. Check if the challenge has expired (current time > expiresAt)
+     *  4. Return validation result
      *
      * **Error cases:**
      *  - Missing or empty SHA → "SHA is required and cannot be empty"
-     *  - Missing or null createdAt → "Creation timestamp is required"
      *  - SHA not found in DB → "Challenge not found"
-     *  - createdAt doesn't match DB → "Challenge creation timestamp mismatch"
      *  - Challenge expired → "Challenge has expired"
      *  - Valid challenge → "Challenge is valid"
      *
-     * @param request [ChallengeValidationRequestDto] with SHA and createdAt
+     * @param request [ChallengeValidationRequestDto] with SHA
      * @return [ChallengeValidationResponseDto] with validation result
      */
     fun validateChallenge(request: ChallengeValidationRequestDto): ChallengeValidationResponseDto {
@@ -114,15 +111,7 @@ class ChallengeService(private val challengeRepository: ChallengeRepository) {
             )
         }
 
-        // Step 3: Verify createdAt matches the database record
-        if (challenge.createdAt != request.createdAt) {
-            return ChallengeValidationResponseDto(
-                isValid = false,
-                message = "Challenge creation timestamp mismatch"
-            )
-        }
-
-        // Step 4: Check if the challenge has expired
+        // Step 3: Check if the challenge has expired
         val now = Instant.now()
         if (now.isAfter(challenge.expiresAt)) {
             return ChallengeValidationResponseDto(
@@ -131,7 +120,7 @@ class ChallengeService(private val challengeRepository: ChallengeRepository) {
             )
         }
 
-        // Step 5: Challenge is valid
+        // Step 4: Challenge is valid
         return ChallengeValidationResponseDto(
             isValid = true,
             message = "Challenge is valid"

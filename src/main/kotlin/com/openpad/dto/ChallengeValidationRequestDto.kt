@@ -2,15 +2,13 @@ package com.openpad.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.time.Instant
 
 /**
  * Data Transfer Object for challenge validation request.
  *
  * **Validation at API boundary:**
- *  - Both fields are required (non-null)
+ *  - SHA is required (non-null)
  *  - SHA should be in valid format (will be validated in service)
- *  - createdAt should be a valid Instant (will be validated in service)
  *
  * **Jackson Notes:**
  *  - `@JsonCreator` explicitly tells Jackson how to deserialize this class
@@ -23,7 +21,5 @@ import java.time.Instant
  */
 data class ChallengeValidationRequestDto @JsonCreator constructor(
     @JsonProperty("sha")
-    val sha: String,
-    @JsonProperty("createdAt")
-    val createdAt: Instant
+    val sha: String
 )
